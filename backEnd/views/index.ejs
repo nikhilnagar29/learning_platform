@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.io Test</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        }
+        .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .message-list {
+        list-style-type: none;
+        padding: 0;
+        }
+        .message-list li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        }
+        .message-list li:last-child {
+        border-bottom: none;
+        }
+        .message-form {
+        display: flex;
+        margin-top: 20px;
+        }
+        .message-form input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px 0 0 5px;
+        }
+        .message-form button {
+        padding: 10px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+        }
+        </style>
+</head>
+
+<body>
+    <form action="/host" method="post">
+        <button id="hostBtn">Host</button>
+    </form>
+
+    <form action="/join" method="post">
+        <input id="sessionInput" name="sessionID" placeholder="Enter Session ID">
+        <button id="joinBtn" type="submit">Join</button>
+    </form>
+
+</body>
+</html>

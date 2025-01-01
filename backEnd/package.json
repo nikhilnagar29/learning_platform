@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This project for make a platform that you can do make classes and host any thing. ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "live class"
+  },
+  "author": "Nikhil Nagar",
+  "license": "ISC",
+  "dependencies": {
+    "cookies": "^0.9.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.3"
+  }
+}

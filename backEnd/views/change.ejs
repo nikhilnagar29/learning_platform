@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .message-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .message-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .message-list li:last-child {
+            border-bottom: none;
+        }
+        .message-form {
+            display: flex;
+            margin-top: 20px;
+        }
+        .message-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+        }
+        .message-form button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <% var session = sessionID || 'send req for section'; %>
+        <h3>Section: <%= session %></h3>
+        <h1>Message App</h1>
+        <ul class="message-list">
+            <% var messages = messages || []; %>
+            <% if (messages.length > 0) { %>
+                <% messages.forEach(function(message) { %>
+                    <li><%= message %></li>
+                <% }); %>
+            <% } else { %>
+                <li>No messages available</li>
+            <% } %>
+
+        </ul>
+        <form class="message-form">
+            <input type="text" name="message" placeholder="Type your message here..." required>
+            <button type="submit">Send</button>
+        </form>
+        
+        <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        var socket = io();
+        var sessionID = '<%= sessionID %>';
+        localStorage.setItem('sessionID', sessionID);
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+            socket.emit("host-session", sessionID);
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+        });
+
+        document.querySelector('.message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var messageInput = document.querySelector('input[name="message"]');
+            var message = messageInput.value;
+
+            socket.emit('send-message', { message , sessionID }, function() {
+                console.log(message , sessionID);
+            });
+            messageInput.value = '';
+            const add = document.createElement('li');
+            add.textContent = message;
+            document.querySelector('.message-list').appendChild(add);
+        });
+    </script>
+    </div>
+</body>
+</html>
