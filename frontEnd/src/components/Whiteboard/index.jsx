@@ -77,11 +77,12 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
         }
 
         elements.forEach(element => {
+            const ctx = canvasRef.current.getContext("2d") ;
             if(element.type === "pencil"){
                 roughtCanvas.linearPath(element.path) ;
             }
             else if(element.type === "circle"){
-                const ctx = canvasRef.current.getContext("2d") ;
+                
                 const {offsetX , offsetY , diameter , storke} = element ;
                 ctx.beginPath() ;
                 ctx.arc(offsetX , offsetY , diameter/2 , 0 , 2*Math.PI) ;
@@ -90,7 +91,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 // roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
             }
             else if(element.type === "line"){
-                const ctx = canvasRef.current.getContext("2d") ;
+                
                 const {moveTo , lineTo , storke} = element ;
                 ctx.beginPath() ;
                 ctx.moveTo(moveTo[0] , moveTo[1]) ;
@@ -99,9 +100,19 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 ctx.stroke() ;
                 // roughtCanvas.line(moveTo[0] , moveTo[1] , lineTo[0] , lineTo[1] , { stroke: storke }) ;
             }
+            else if(element.type === "rectangle"){
+                const {offsetX , offsetY , width , height , storke} = element ;
+                ctx.beginPath() ;
+                ctx.rect(offsetX , offsetY , width , height) ;
+                ctx.strokeStyle = storke ;
+                ctx.stroke() ;
+                // roughtCanvas.rectangle(offsetX , offsetY , width , height , { stroke: storke }) ;
+            }
+
         });
 
     } , [elements , screenW] )
+
 
     const handleMouseDown = (e) => {
 
@@ -141,6 +152,19 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     type: "line" , 
                     moveTo: [offsetX , offsetY] ,
                     lineTo: [offsetX , offsetY] ,
+                    storke: "black" ,
+                }
+            ])
+        }
+        else if(tool === "rectangle"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "rectangle" , 
+                    offsetX ,
+                    offsetY ,
+                    width: 0 ,
+                    height: 0 ,
                     storke: "black" ,
                 }
             ])
@@ -201,6 +225,24 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                                     ...ele , 
                                     lineTo: [offsetX , offsetY]
                                 }
+                            }else{
+                                return ele ;
+                            }
+                        })
+                    )
+                }
+                else if(tool == "rectangle"){
+                    const {offsetX: startX , offsetY: startY} = elements[elements.length -1] ;
+                    const width = offsetX - startX ;
+                    const height = offsetY - startY ;
+
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele , 
+                                    width , height
+                                };
                             }else{
                                 return ele ;
                             }
