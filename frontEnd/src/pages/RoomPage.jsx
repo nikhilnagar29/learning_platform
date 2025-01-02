@@ -10,9 +10,9 @@ const RoomPage = () => {
     const canvasRef = useRef(null) ;
     const ctxRex = useRef(null) ;
 
-    const [tool , setTool] = useState("pencil") ;
+    const [tool , setTool] = useState("pen") ;
     const [color , setColor] = useState("#000000") ;
-    const [elements , setElements] = useState([]) ;
+    const [elements , setElements] = useState([{}]) ;
     const [history , setHistory] = useState([]);
     const [clean , setClean] = useState(false) ;
 

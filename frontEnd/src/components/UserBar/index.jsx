@@ -22,6 +22,29 @@ const IndexBar = ({ tool , setTool , color , setColor , clean ,setClean , elemen
 
     } , [clean])
 
+    const undo = () => {
+        if (elements.length === 0) return; // Prevent undo if no elements exist
+        // console.log(elements , elements.length , history.length);
+        if(elements.length === 1){
+            setHistory((prev) => [...prev , elements[0]]) ;
+            setElements([]) ;
+            return ;
+        }
+        setHistory((prev) => [...prev, elements[elements.length - 1]]);
+        setElements((prev) => prev.slice(0, -1)); // Efficiently remove the last element
+    };
+
+    const redo = () => {
+        if (history.length === 0) return; // Prevent redo if no history exists
+    
+        setElements((prevElements) => [
+            ...prevElements,
+            history[history.length - 1],
+        ]);
+        setHistory((prevHistory) => prevHistory.slice(0, -1));
+    };
+    
+
 
     return (
         <div className="mt-5 index-bar flex bg-gray-200 fixed justify-center rounded-full px-3 py-1 gap-4 h-12 w-[550px]"  
@@ -30,8 +53,8 @@ const IndexBar = ({ tool , setTool , color , setColor , clean ,setClean , elemen
                 left: "50%",
                 transform: "translateX(-50%)",
                 zIndex: 1000, // Ensures it's above all elements
+                cursor: "pointer"
             }}>
-
             {/* <h6>{tool}</h6> */}
 
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ tool === "pencil" ? "text-blue-500" : "text-gray-500"} hover:scale-150 transition-transform duration-200`}
@@ -66,8 +89,11 @@ const IndexBar = ({ tool , setTool , color , setColor , clean ,setClean , elemen
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ tool === "text" ? "text-blue-500" : "text-gray-500"} hover:scale-150 transition-transform duration-200`}
             onClick={() => {setTool("text")}} style={{cursor: "pointer"}} ><path d="M2 4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4ZM4 5V19H20V5H4ZM7 8H17V11H15V10H13V14H14.5V16H9.5V14H11V10H9V11H7V8Z"/></svg>
         
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5.82843 6.99955L8.36396 9.53509L6.94975 10.9493L2 5.99955L6.94975 1.0498L8.36396 2.46402L5.82843 4.99955H13C17.4183 4.99955 21 8.58127 21 12.9996C21 17.4178 17.4183 20.9996 13 20.9996H4V18.9996H13C16.3137 18.9996 19 16.3133 19 12.9996C19 9.68584 16.3137 6.99955 13 6.99955H5.82843Z"/></svg>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.1716 6.99955H11C7.68629 6.99955 5 9.68584 5 12.9996C5 16.3133 7.68629 18.9996 11 18.9996H20V20.9996H11C6.58172 20.9996 3 17.4178 3 12.9996C3 8.58127 6.58172 4.99955 11 4.99955H18.1716L15.636 2.46402L17.0503 1.0498L22 5.99955L17.0503 10.9493L15.636 9.53509L18.1716 6.99955Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ elements.length > 1 ? "text-gray-600 hover:scale-150 transition-transform duration-200" : "text-gray-400"} `}
+            onClick={() => { undo() }} ><path d="M5.82843 6.99955L8.36396 9.53509L6.94975 10.9493L2 5.99955L6.94975 1.0498L8.36396 2.46402L5.82843 4.99955H13C17.4183 4.99955 21 8.58127 21 12.9996C21 17.4178 17.4183 20.9996 13 20.9996H4V18.9996H13C16.3137 18.9996 19 16.3133 19 12.9996C19 9.68584 16.3137 6.99955 13 6.99955H5.82843Z"/></svg>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ history.length > 0 ? "text-gray-600 hover:scale-150 transition-transform duration-200" : "text-gray-400"} `}
+            onClick={() => { redo() }}><path d="M18.1716 6.99955H11C7.68629 6.99955 5 9.68584 5 12.9996C5 16.3133 7.68629 18.9996 11 18.9996H20V20.9996H11C6.58172 20.9996 3 17.4178 3 12.9996C3 8.58127 6.58172 4.99955 11 4.99955H18.1716L15.636 2.46402L17.0503 1.0498L22 5.99955L17.0503 10.9493L15.636 9.53509L18.1716 6.99955Z"/></svg>
         
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" t="1569683368540"  version="1.1" p-id="9723"
             onClick={() => setClean(true)}
