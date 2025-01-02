@@ -3,12 +3,14 @@ import rough from 'roughjs';
 
 const roughGenerator = rough.generator() ;
 
-const WhiteBoard = ({ canvasRef , ctxRef , elements , setElements }) => {
+const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
 
     const [isDrawing , setIsDrawing] = useState(false) ;
+    const [screenW , setScreenW] = useState(window.innerWidth) ;
     
     canvasRef = useRef(null);
     ctxRef = useRef(null);
+
     //resize logic of white board
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -20,6 +22,8 @@ const WhiteBoard = ({ canvasRef , ctxRef , elements , setElements }) => {
             // Get screen dimensions
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
+
+            setScreenW(screenWidth) ;
 
             // Calculate canvas dimensions based on aspect ratio
             let canvasWidth = screenWidth;
@@ -62,66 +66,126 @@ const WhiteBoard = ({ canvasRef , ctxRef , elements , setElements }) => {
     })
     
     useLayoutEffect(()=>{
+
         const roughtCanvas = rough.canvas(canvasRef.current) ;
 
+        if (elements.length > 0) {
+            const ctx = canvasRef.current.getContext("2d");
+            ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height); // Clear the canvas
+            ctx.fillStyle = "gray"; // Set the fill style to gray
+            ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height); // Fill the entire canvas with gray
+        }
+
         elements.forEach(element => {
-            roughtCanvas.linearPath(element.path) ;
+            if(element.type === "pencil"){
+                roughtCanvas.linearPath(element.path) ;
+            }
+            else if(element.type === "circle"){
+                const {offsetX , offsetY , diameter , storke} = element ;
+                roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
+            }
         });
 
-    } , [elements])
+    } , [elements , screenW] )
 
     const handleMouseDown = (e) => {
+
         const {offsetX , offsetY} = e.nativeEvent ;
         setIsDrawing(true) ;
-        setElements((prev) => [
-            ...prev ,
-            {
-               type: "pencil" , 
-               offsetX ,
-               offsetY ,
-               path: [[offsetX,offsetY]],
-               storke: "black" , 
-            }
 
-        ])
+        if(tool === "pencil"){     
+            setElements((prev) => [
+                ...prev ,
+                {
+                type: "pencil" , 
+                offsetX ,
+                offsetY ,
+                path: [[offsetX,offsetY]],
+                storke: "black" , 
+                }
+
+            ])
+        }
+        else if(tool === "circle"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "circle" , 
+                    offsetX ,
+                    offsetY ,
+                    diameter: 0 ,
+                    storke: "black" , 
+                }
+            ])
+            
+        }
+
     }
 
     const handleMouseMove = (e) => {
+
         const {offsetX , offsetY} = e.nativeEvent ;
         if(isDrawing){
+            
 
-            //pencile By default as static 
-            const {path} = elements[elements.length -1] ;
-            const newPath = [...path , [offsetX , offsetY]] ;
+                if(tool === "pencil"){
+                    //pencile By default as static 
+                    const {path} = elements[elements.length -1] ;
+                    const newPath = [...path , [offsetX , offsetY]] ;
 
-            setElements((prev)=>
-                prev.map((ele,index)=>{
-                    if(index === elements.length -1){
-                        return{
-                            ...ele , 
-                            path: newPath ,
-                        };
-                    }else{
-                        return ele ;
-                    }
-                })
-            )
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele , 
+                                    path: newPath ,
+                                };
+                            }else{
+                                return ele ;
+                            }
+                        })
+                    )
+
+                }
+                else if(tool === "circle"){
+                    const {offsetX: startX , offsetY: startY} = elements[elements.length -1] ;
+                    const diameter = 2*Math.sqrt((startX - offsetX)**2 + (startY - offsetY)**2) ;
+
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele , 
+                                    diameter
+                                };
+                            }else{
+                                return ele ;
+                            }
+                        })
+                    )
+
+                }
         }
+
         
     }
 
     const handelMouseUp = (e) => {
-        const {offsetX , offsetY} = e.nativeEvent ;
-        setIsDrawing(false) ; 
+
+            const {offsetX , offsetY} = e.nativeEvent ;
+            setIsDrawing(false) ;
+        
     }
 
     return (
         <>
-            <canvas ref={canvasRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handelMouseUp}
-            className=""/>
+            <div className="">
+                <canvas ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handelMouseUp}
+                className=""/>
+            </div>
         </>
 );
 }
