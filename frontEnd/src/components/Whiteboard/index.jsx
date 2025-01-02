@@ -394,7 +394,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
 
     return (
         <>
-            <div className="">
+            <div className= "">
                 <canvas ref={canvasRef}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}

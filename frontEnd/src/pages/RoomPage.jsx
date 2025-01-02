@@ -18,8 +18,8 @@ const RoomPage = () => {
 
     return (
         <>
-            <div>
-                <UserPage
+                <div className="bg-gray-700 w-screen h-screen">
+                    <UserPage
                     color={color} setColor={setColor}
                     tool={tool} setTool={setTool}
                     elements={elements} setElements={setElements}
