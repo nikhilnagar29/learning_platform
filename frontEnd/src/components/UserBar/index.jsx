@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
 
-const IndexBar = ({ tool , setTool }) => {
+const IndexBar = ({ tool , setTool , color , setColor }) => {
     
     return (
-        <div className="mt-5 index-bar flex bg-gray-200 fixed justify-center rounded-full px-3 py-1 gap-4 h-12 w-[380px]"  
+        <div className="mt-5 index-bar flex bg-gray-200 fixed justify-center rounded-full px-3 py-1 gap-4 h-12 w-[450px]"  
             style={{
                 top: "0",
                 left: "50%",
@@ -49,6 +49,14 @@ const IndexBar = ({ tool , setTool }) => {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5.82843 6.99955L8.36396 9.53509L6.94975 10.9493L2 5.99955L6.94975 1.0498L8.36396 2.46402L5.82843 4.99955H13C17.4183 4.99955 21 8.58127 21 12.9996C21 17.4178 17.4183 20.9996 13 20.9996H4V18.9996H13C16.3137 18.9996 19 16.3133 19 12.9996C19 9.68584 16.3137 6.99955 13 6.99955H5.82843Z"/></svg>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.1716 6.99955H11C7.68629 6.99955 5 9.68584 5 12.9996C5 16.3133 7.68629 18.9996 11 18.9996H20V20.9996H11C6.58172 20.9996 3 17.4178 3 12.9996C3 8.58127 6.58172 4.99955 11 4.99955H18.1716L15.636 2.46402L17.0503 1.0498L22 5.99955L17.0503 10.9493L15.636 9.53509L18.1716 6.99955Z"/></svg>
         
+            <input
+                className="mt-1 m-[2px] p-[-5px] h-8 w-8 rounded-full border-none cursor-pointer"
+                type="color"
+                id="color-picker"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                />
+
         </div>
     );
 };

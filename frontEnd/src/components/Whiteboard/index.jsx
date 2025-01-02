@@ -3,7 +3,7 @@ import rough from 'roughjs';
 
 const roughGenerator = rough.generator() ;
 
-const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
+const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color }) => {
 
     const [isDrawing , setIsDrawing] = useState(false) ;
     const [screenW , setScreenW] = useState(window.innerWidth) ;
@@ -79,7 +79,10 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
         elements.forEach(element => {
             const ctx = canvasRef.current.getContext("2d") ;
             if(element.type === "pencil"){
-                roughtCanvas.linearPath(element.path) ;
+                ctx.save(); // Save context state
+                roughtCanvas.linearPath(element.path , { stroke: element.storke }) ;
+                ctx.restore(); // Restore context state
+                
             }
             else if(element.type === "circle"){
                 ctx.save(); // Save context state
@@ -117,11 +120,11 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 
                 ctx.save(); // Save context state
                 ctx.globalCompositeOperation = "multiply";
-                ctx.strokeStyle = "yellow"; // Highlight color
+                ctx.strokeStyle = element.storke || "yellow"; // Highlight color
                 ctx.lineWidth = 15; // Thickness of the highlight
                 ctx.lineJoin = "round"; // Smooth corners
                 ctx.lineCap = "round"; // Smooth line ends
-                ctx.shadowColor = "yellow"; // Glow color
+                ctx.shadowColor = element.storke || "yellow"; // Glow color
                 ctx.shadowBlur = 15; // Intensity of the glow
 
                 ctx.beginPath();
@@ -180,7 +183,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 offsetX ,
                 offsetY ,
                 path: [[offsetX,offsetY]],
-                storke: "black" , 
+                storke: color, 
                 }
 
             ])
@@ -193,7 +196,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     offsetX ,
                     offsetY ,
                     diameter: 0 ,
-                    storke: "black" , 
+                    storke: color , 
                 }
             ])
             
@@ -205,7 +208,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     type: "line" , 
                     moveTo: [offsetX , offsetY] ,
                     lineTo: [offsetX , offsetY] ,
-                    storke: "black" ,
+                    storke: color ,
                 }
             ])
         }
@@ -218,7 +221,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     offsetY ,
                     width: 0 ,
                     height: 0 ,
-                    storke: "black" ,
+                    storke: color ,
                 }
             ])
         }
@@ -228,7 +231,9 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 {
                     type: "highlight" , 
                     path: [[offsetX,offsetY]],
-                    storke: "yellow" ,
+                    storke: color ,
+                    shadowColor: color ,
+                    strokeStyle: color ,
                 }
             ])
         }
@@ -242,7 +247,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     offsetX ,
                     offsetY ,
                     text ,
-                    storke: "black" ,
+                    storke: color ,
                 }
             ])
             setIsDrawing(false) ;
@@ -255,7 +260,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     offsetX ,
                     offsetY ,
                     path: [[offsetX,offsetY]],
-                    storke: "black" ,
+                    storke: color ,
                 }
             ])
         }
