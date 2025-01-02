@@ -82,40 +82,43 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 roughtCanvas.linearPath(element.path) ;
             }
             else if(element.type === "circle"){
-                
+                ctx.save(); // Save context state
                 const {offsetX , offsetY , diameter , storke} = element ;
                 ctx.beginPath() ;
                 ctx.arc(offsetX , offsetY , diameter/2 , 0 , 2*Math.PI) ;
                 ctx.strokeStyle = storke ;
                 ctx.lineWidth = 2; // Reset lineWidth for circle
                 ctx.stroke() ;
-                    
+                ctx.restore(); // Restore context state
                 // roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
             }
             else if(element.type === "line"){
-                
+                ctx.save(); // Save context state
                 const {moveTo , lineTo , storke} = element ;
                 ctx.beginPath() ;
                 ctx.moveTo(moveTo[0] , moveTo[1]) ;
                 ctx.lineTo(lineTo[0] , lineTo[1]) ;
                 ctx.strokeStyle = storke ;
                 ctx.stroke() ;
+                ctx.restore(); // Restore context state
                 // roughtCanvas.line(moveTo[0] , moveTo[1] , lineTo[0] , lineTo[1] , { stroke: storke }) ;
             }
             else if(element.type === "rectangle"){
                 const {offsetX , offsetY , width , height , storke} = element ;
+                ctx.save(); // Save context state
                 ctx.beginPath() ;
                 ctx.rect(offsetX , offsetY , width , height) ;
                 ctx.strokeStyle = storke ;
                 ctx.stroke() ;
+                ctx.restore();
                 // roughtCanvas.rectangle(offsetX , offsetY , width , height , { stroke: storke }) ;
             }
             else if(element.type === "highlight"){
-                // Smooth and isolated highlight effect
+                
                 ctx.save(); // Save context state
                 ctx.globalCompositeOperation = "multiply";
                 ctx.strokeStyle = "yellow"; // Highlight color
-                ctx.lineWidth = 20; // Thickness of the highlight
+                ctx.lineWidth = 15; // Thickness of the highlight
                 ctx.lineJoin = "round"; // Smooth corners
                 ctx.lineCap = "round"; // Smooth line ends
                 ctx.shadowColor = "yellow"; // Glow color
@@ -130,6 +133,14 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     }
                 });
                 ctx.stroke();
+                ctx.restore(); // Restore context state
+            }
+            else if(element.type === "text"){
+                const {offsetX , offsetY , text , storke} = element ;
+                ctx.save(); // Save context state
+                ctx.font = "20px comic sans ms"; // Set font size and family
+                ctx.fillStyle = storke; // Set text color
+                ctx.fillText(text, offsetX, offsetY); // Draw the text
                 ctx.restore(); // Restore context state
             }
 
@@ -202,6 +213,21 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     storke: "yellow" ,
                 }
             ])
+        }
+        else if(tool === "text"){
+            const text = prompt("Enter your text") ;
+
+            text && setElements((prev) => [
+                ...prev ,
+                {
+                    type: "text" , 
+                    offsetX ,
+                    offsetY ,
+                    text ,
+                    storke: "black" ,
+                }
+            ])
+            setIsDrawing(false) ;
         }
 
     }
