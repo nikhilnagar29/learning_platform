@@ -143,6 +143,24 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 ctx.fillText(text, offsetX, offsetY); // Draw the text
                 ctx.restore(); // Restore context state
             }
+            else if(element.type === "pen"){
+                const {path , storke} = element ;
+                ctx.save(); // Save context state
+                ctx.beginPath();
+                path.forEach((path, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(path[0], path[1]); // Start at the first point
+                    } else {
+                        ctx.lineTo(path[0], path[1]); // Draw a line to the next point
+                    }
+                });
+                ctx.strokeStyle = storke; // Set stroke color
+                ctx.lineWidth = 2; // Set line width
+                ctx.lineJoin = "round"; // Smooth corners
+                ctx.lineCap = "round"; // Smooth line ends
+                ctx.stroke(); // Draw the path
+                ctx.restore(); // Restore context state
+            }
 
         });
 
@@ -228,6 +246,18 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 }
             ])
             setIsDrawing(false) ;
+        }
+        else if(tool === "pen"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "pen" , 
+                    offsetX ,
+                    offsetY ,
+                    path: [[offsetX,offsetY]],
+                    storke: "black" ,
+                }
+            ])
         }
 
     }
@@ -319,6 +349,22 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                                 return{
                                     ...ele ,
                                     path: newPath ,
+                                };
+                            }
+                            return ele ; //returning all other elements as it is
+                        })
+                    );
+                }
+                else if(tool === "pen"){
+                    const {path} = elements[elements.length -1] ;
+                    const newPath = [...path , [offsetX , offsetY]] ;
+
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele ,
+                                    path: newPath,
                                 };
                             }
                             return ele ; //returning all other elements as it is
