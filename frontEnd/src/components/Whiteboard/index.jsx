@@ -87,7 +87,9 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 ctx.beginPath() ;
                 ctx.arc(offsetX , offsetY , diameter/2 , 0 , 2*Math.PI) ;
                 ctx.strokeStyle = storke ;
+                ctx.lineWidth = 2; // Reset lineWidth for circle
                 ctx.stroke() ;
+                    
                 // roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
             }
             else if(element.type === "line"){
@@ -107,6 +109,28 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 ctx.strokeStyle = storke ;
                 ctx.stroke() ;
                 // roughtCanvas.rectangle(offsetX , offsetY , width , height , { stroke: storke }) ;
+            }
+            else if(element.type === "highlight"){
+                // Smooth and isolated highlight effect
+                ctx.save(); // Save context state
+                ctx.globalCompositeOperation = "multiply";
+                ctx.strokeStyle = "yellow"; // Highlight color
+                ctx.lineWidth = 20; // Thickness of the highlight
+                ctx.lineJoin = "round"; // Smooth corners
+                ctx.lineCap = "round"; // Smooth line ends
+                ctx.shadowColor = "yellow"; // Glow color
+                ctx.shadowBlur = 15; // Intensity of the glow
+
+                ctx.beginPath();
+                element.path.forEach((path, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(path[0], path[1]); // Start at the first point
+                    } else {
+                        ctx.lineTo(path[0], path[1]); // Draw a line to the next point
+                    }
+                });
+                ctx.stroke();
+                ctx.restore(); // Restore context state
             }
 
         });
@@ -166,6 +190,16 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     width: 0 ,
                     height: 0 ,
                     storke: "black" ,
+                }
+            ])
+        }
+        else if(tool === "highlight"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "highlight" , 
+                    path: [[offsetX,offsetY]],
+                    storke: "yellow" ,
                 }
             ])
         }
@@ -249,6 +283,23 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                         })
                     )
                 }
+                else if(tool === "highlight"){
+                    const {path} = elements[elements.length -1] ;
+                    const newPath = [...path , [offsetX , offsetY]] ;
+
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele ,
+                                    path: newPath ,
+                                };
+                            }
+                            return ele ; //returning all other elements as it is
+                        })
+                    );
+                }
+
 
         }
 
