@@ -3,7 +3,7 @@ import rough from 'roughjs';
 
 const roughGenerator = rough.generator() ;
 
-const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color , setClean , clean}) => {
+const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color }) => {
 
     const [isDrawing , setIsDrawing] = useState(false) ;
     const [screenW , setScreenW] = useState(window.innerWidth) ;
@@ -65,25 +65,6 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
         ctxRef.current = ctx ;
     },)
 
-    useEffect(()=>{
-        if(clean){
-            setElements((prev) => [
-                ...prev ,
-                {
-                    type: "rectangle" , 
-                    offsetX:0 ,
-                    offsetY:0 ,
-                    width: 6000 ,
-                    height: 4000 ,
-                    storke: "gray" ,
-                    fillStyle: "gray" ,
-                } ,
-            ]);
-            setClean(false);
-        }
-
-    } , [clean])
-    
     useLayoutEffect(()=>{
 
         const roughtCanvas = rough.canvas(canvasRef.current) ;

@@ -13,6 +13,7 @@ const RoomPage = () => {
     const [tool , setTool] = useState("pencil") ;
     const [color , setColor] = useState("#000000") ;
     const [elements , setElements] = useState([]) ;
+    const [history , setHistory] = useState([]);
     const [clean , setClean] = useState(false) ;
 
     return (
@@ -21,7 +22,9 @@ const RoomPage = () => {
                 <UserPage
                     color={color} setColor={setColor}
                     tool={tool} setTool={setTool}
-                    setClean = {setClean}
+                    elements={elements} setElements={setElements}
+                    history={history} setHistory={setHistory}
+                    clean={clean} setClean = {setClean}
                 />
                 <WhiteBoard 
                     tool={tool} setTool={setTool}
@@ -29,7 +32,7 @@ const RoomPage = () => {
                     ctxRex={ctxRex} elements={elements}
                     setElements={setElements}
                     color={color}
-                    clean={clean} setClean = {setClean}
+                    
                 />
             </div>
         </>
