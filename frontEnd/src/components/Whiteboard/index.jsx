@@ -81,8 +81,23 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 roughtCanvas.linearPath(element.path) ;
             }
             else if(element.type === "circle"){
+                const ctx = canvasRef.current.getContext("2d") ;
                 const {offsetX , offsetY , diameter , storke} = element ;
-                roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
+                ctx.beginPath() ;
+                ctx.arc(offsetX , offsetY , diameter/2 , 0 , 2*Math.PI) ;
+                ctx.strokeStyle = storke ;
+                ctx.stroke() ;
+                // roughtCanvas.circle(offsetX , offsetY , diameter , { stroke: storke }) ;
+            }
+            else if(element.type === "line"){
+                const ctx = canvasRef.current.getContext("2d") ;
+                const {moveTo , lineTo , storke} = element ;
+                ctx.beginPath() ;
+                ctx.moveTo(moveTo[0] , moveTo[1]) ;
+                ctx.lineTo(lineTo[0] , lineTo[1]) ;
+                ctx.strokeStyle = storke ;
+                ctx.stroke() ;
+                // roughtCanvas.line(moveTo[0] , moveTo[1] , lineTo[0] , lineTo[1] , { stroke: storke }) ;
             }
         });
 
@@ -118,6 +133,17 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                 }
             ])
             
+        }
+        else if(tool === "line"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "line" , 
+                    moveTo: [offsetX , offsetY] ,
+                    lineTo: [offsetX , offsetY] ,
+                    storke: "black" ,
+                }
+            ])
         }
 
     }
@@ -165,6 +191,23 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements }) => {
                     )
 
                 }
+                else if(tool === "line"){
+                    const {lineTo} = elements[elements.length -1] ;
+
+                    setElements((prev)=> 
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele , 
+                                    lineTo: [offsetX , offsetY]
+                                }
+                            }else{
+                                return ele ;
+                            }
+                        })
+                    )
+                }
+
         }
 
         
