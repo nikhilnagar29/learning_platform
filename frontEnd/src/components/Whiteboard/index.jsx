@@ -3,7 +3,7 @@ import rough from 'roughjs';
 
 const roughGenerator = rough.generator() ;
 
-const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color }) => {
+const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color , setClean , clean}) => {
 
     const [isDrawing , setIsDrawing] = useState(false) ;
     const [screenW , setScreenW] = useState(window.innerWidth) ;
@@ -63,7 +63,26 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
         const ctx = canvas.getContext("2d") ;
 
         ctxRef.current = ctx ;
-    })
+    },)
+
+    useEffect(()=>{
+        if(clean){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "rectangle" , 
+                    offsetX:0 ,
+                    offsetY:0 ,
+                    width: 6000 ,
+                    height: 4000 ,
+                    storke: "gray" ,
+                    fillStyle: "gray" ,
+                } ,
+            ]);
+            setClean(false);
+        }
+
+    } , [clean])
     
     useLayoutEffect(()=>{
 
@@ -107,11 +126,13 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                 // roughtCanvas.line(moveTo[0] , moveTo[1] , lineTo[0] , lineTo[1] , { stroke: storke }) ;
             }
             else if(element.type === "rectangle"){
-                const {offsetX , offsetY , width , height , storke} = element ;
+                const {offsetX , offsetY , width , height , storke , fillStyle} = element ;
                 ctx.save(); // Save context state
                 ctx.beginPath() ;
                 ctx.rect(offsetX , offsetY , width , height) ;
-                ctx.strokeStyle = storke ;
+                ctx.fillStyle = fillStyle || "transparent"; 
+                ctx.fill();
+                ctx.strokeStyle = storke || "transparent";
                 ctx.stroke() ;
                 ctx.restore();
                 // roughtCanvas.rectangle(offsetX , offsetY , width , height , { stroke: storke }) ;
