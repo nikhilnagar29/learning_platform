@@ -166,6 +166,26 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                 ctx.stroke(); // Draw the path
                 ctx.restore(); // Restore context state
             }
+            else if(element.type === "eraser"){
+                const {path , storke} = element ;
+                ctx.save(); // Save context state
+                // Erase instead of draw
+                ctx.beginPath();
+                path.forEach((path, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(path[0], path[1]); // Start at the first point
+                    } else {
+                        ctx.lineTo(path[0], path[1]); // Draw a line to the next point
+                    }
+                });
+                ctx.strokeStyle = "gray"; // Set stroke color to white
+                ctx.lineWidth = 40; // Set line width
+                ctx.lineJoin = "round"; // Smooth corners
+                ctx.lineCap = "round"; // Smooth line ends
+                ctx.stroke(); // Draw the path
+                ctx.restore(); // Restore context state
+            }
+            
 
         });
 
@@ -263,6 +283,18 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                     offsetY ,
                     path: [[offsetX,offsetY]],
                     storke: color ,
+                }
+            ])
+        }
+        else if(tool === "eraser"){
+            setElements((prev) => [
+                ...prev ,
+                {
+                    type: "eraser" , 
+                    offsetX ,
+                    offsetY ,
+                    path: [[offsetX,offsetY]],
+                    storke: "gray" ,
                 }
             ])
         }
@@ -378,6 +410,22 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                         })
                     );
                 }
+                else if(tool === "eraser"){
+                    const {path} = elements[elements.length -1] ;
+                    const newPath = [...path , [offsetX , offsetY]] ;
+
+                    setElements((prev)=>
+                        prev.map((ele,index)=>{
+                            if(index === elements.length -1){
+                                return{
+                                    ...ele ,
+                                    path: newPath,
+                                };
+                            }
+                            return ele ; //returning all other elements as it is
+                        })
+                    );
+                }
 
 
         }
@@ -399,7 +447,8 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handelMouseUp}
-                className=""/>
+                className=""
+                style={{cursor: "crosshair"}}/>
             </div>
         </>
 );

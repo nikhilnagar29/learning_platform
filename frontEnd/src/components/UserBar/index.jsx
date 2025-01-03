@@ -47,7 +47,7 @@ const IndexBar = ({ tool , setTool , color , setColor , clean ,setClean , elemen
 
 
     return (
-        <div className="mt-5 index-bar flex bg-gray-200 fixed justify-center rounded-full px-3 py-1 gap-4 h-12 w-[550px]"  
+        <div className="mt-5 index-bar flex bg-gray-200 fixed justify-center rounded-full px-3 py-1 gap-4 h-12 w-[600px]"  
             style={{
                 top: "0",
                 left: "50%",
@@ -89,6 +89,11 @@ const IndexBar = ({ tool , setTool , color , setColor , clean ,setClean , elemen
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ tool === "text" ? "text-blue-500" : "text-gray-500"} hover:scale-150 transition-transform duration-200`}
             onClick={() => {setTool("text")}} style={{cursor: "pointer"}} ><path d="M2 4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4ZM4 5V19H20V5H4ZM7 8H17V11H15V10H13V14H14.5V16H9.5V14H11V10H9V11H7V8Z"/></svg>
         
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="currentColor" className={`${ tool === "eraser" ? "text-blue-500" : "text-gray-500"} hover:scale-150 transition-transform duration-200`}
+            onClick={() => {setTool("eraser")}} style={{cursor: "pointer"}} >
+            <path d="M27.66,93.53h32.49l9.1-9.08c1.4-1.4,1.41-3.7,0.01-5.1l-27.02-27.1c-1.4-1.4-3.7-1.41-5.1-0.01L14.3,75.03 c-1.41,1.4-1.41,3.7-0.01,5.1L27.66,93.53L27.66,93.53z M71.03,93.53h51.84v9.85H61.16H50.28h-12.8H25.7h-0.35L1.05,79.01 c-1.4-1.4-1.4-3.7,0.01-5.1L74.11,1.05c1.41-1.4,3.7-1.4,5.1,0.01l39.62,39.72c1.4,1.4,1.4,3.7-0.01,5.1L71.03,93.53L71.03,93.53z"/>
+            </svg>
+
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${ elements.length > 1 ? "text-gray-600 hover:scale-150 transition-transform duration-200" : "text-gray-400"} `}
             onClick={() => { undo() }} ><path d="M5.82843 6.99955L8.36396 9.53509L6.94975 10.9493L2 5.99955L6.94975 1.0498L8.36396 2.46402L5.82843 4.99955H13C17.4183 4.99955 21 8.58127 21 12.9996C21 17.4178 17.4183 20.9996 13 20.9996H4V18.9996H13C16.3137 18.9996 19 16.3133 19 12.9996C19 9.68584 16.3137 6.99955 13 6.99955H5.82843Z"/></svg>
             
