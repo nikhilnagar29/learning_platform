@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const Room = () => {
   const [sessionId, setSessionId] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [uuidv , setUuidv] = useState("") ;
 
+    // Generate a random UUID
+    useEffect(() => {
+        setUuidv(uuidv4()) ;
+    }
+    , []);
+
+    // dark mode 
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode !== null) {
@@ -42,33 +51,73 @@ const Room = () => {
       </button>
       <div className="flex flex-col md:flex-row items-center justify-center gap-10">
         {/* Create Room Box */}
-        <div className={`flex flex-col items-center justify-center gap-3 border shadow-lg rounded-lg p-6 w-[400px] h-[300px]  max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <h2 className="text-xl font-bold mb-4">Create Room</h2>
-          <button 
-            className={`px-4 py-2 rounded-lg w-full transition-colors duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-            onClick={handleCreateRoom}
-          >
+        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[350px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <h2 className={`text-2xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             Create Room
-          </button>
+            </h2>
+            <p className={`text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            Create a session and share the ID with your friends to collaborate.
+            </p>
+            <button 
+            className={`px-4 py-2 rounded-lg w-full text-lg font-medium transition-colors duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+            onClick={handleCreateRoom}
+            >
+            Create Room
+            </button>
+            <div className="flex flex-col items-center mt-4 gap-2">
+            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Session ID:
+            </p>
+            <div className="flex items-center gap-3">
+                <span className={`px-2 py-1 rounded-lg text-sm font-mono ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}>
+                {uuidv}
+                </span>
+                <button 
+                className={`px-3 py-1 text-sm rounded-md font-medium transition-colors duration-300 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-400 hover:bg-blue-500 text-white'}`}
+                onClick={() => {
+                    navigator.clipboard.writeText(uuidv);
+                    alert('Session ID copied to clipboard!');
+                }}
+                >
+                Copy
+                </button>
+            </div>
+            </div>
+            <p className={`text-xs text-center mt-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+            Copy this session ID and share it with your friends.
+            </p>
         </div>
 
         {/* Join Room Box */}
-        <div className={`flex flex-col items-center justify-center gap-3 border shadow-lg rounded-lg p-6 w-[400px] h-[300px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <h2 className="text-xl font-bold mb-4">Join Room</h2>
-          <input 
-            type="text" 
-            className={`border rounded w-full p-2 mb-4 focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 border-gray-600 focus:ring-blue-600' : 'bg-white border-gray-300 focus:ring-blue-300'} text-inherit`}
-            placeholder="Enter Room Session ID"
-            value={sessionId}
-            onChange={(e) => setSessionId(e.target.value)}
-          />
-          <button 
-            className={`px-4 py-2 rounded-lg w-full transition-colors duration-300 ${isDarkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white`}
-            onClick={handleJoinRoom}
-          >
-            Join
-          </button>
+        {/* Join Room Box */}
+        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[350px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <h2 className={`text-2xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                Join Room
+            </h2>
+            <p className={`text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Enter the session ID shared by the host to join the room and start collaborating.
+            </p>
+            <input 
+                type="text" 
+                className={`border rounded-lg w-full p-3 focus:outline-none focus:ring-2 text-sm font-mono transition-colors duration-300 ${isDarkMode ? 'bg-gray-700 border-gray-600 focus:ring-green-600 text-white' : 'bg-gray-50 border-gray-300 focus:ring-green-300 text-gray-800'}`}
+                placeholder="Enter Room Session ID"
+                value={sessionId}
+                onChange={(e) => setSessionId(e.target.value)}
+            />
+            <button 
+                className={`px-4 py-2 rounded-lg w-full text-lg font-medium transition-colors duration-300 ${isDarkMode ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
+                onClick={handleJoinRoom}
+            >
+                Join Room
+            </button>
+            <div className="text-xs mt-4">
+                <p className={`${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                Don’t have a session ID? Ask the host to create a room and share the ID with you.
+                </p>
+            </div>
         </div>
+
+
       </div>
     </div>
   );
