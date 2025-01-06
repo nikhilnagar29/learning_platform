@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
 
-const Room = () => {
+const Room = ({socket}) => {
   const [sessionId, setSessionId] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [uuidv , setUuidv] = useState("") ;
 
+  const navigate = useNavigate() ;
+
     // Generate a random UUID
     useEffect(() => {
         setUuidv(uuidv4()) ;
+        setSessionId(uuidv) ;
     }
     , []);
 
@@ -22,9 +26,32 @@ const Room = () => {
     }
   }, []);
 
+  //socket set 
+  useEffect(() => {
+    socket.on('room-created' , (data) => {
+        console.log('Room Created: ', data) ;
+
+        navigate('/host' , {state: data}) ;
+    })
+
+    socket.on('error' , (err) => {
+        console.error('Socket error:', err);
+        alert(err.message || 'An error occurred.');
+    } )
+
+    // Cleanup listeners on unmount
+    return () => {
+        socket.off('room-created');
+        socket.off('error');
+      };
+
+  } , [socket])
+
   const handleCreateRoom = () => {
-    console.log("Room created!");
+    console.log("Room created!" , {sessionId: uuidv , name: 'HostNmae'});
     // Add logic to create a room
+    
+    socket.emit('create-room' , {sessionID: uuidv , name: 'HostNmae'}) ;
   };
 
   const handleJoinRoom = () => {

@@ -13,7 +13,7 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const io = socketIo(server);
-const {socketFn} = require('./controllers/mainController');
+const socketFn = require('./socket/socket');
 socketFn(io);
 
 const main = require('./router/main');
