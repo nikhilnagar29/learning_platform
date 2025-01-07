@@ -12,7 +12,7 @@ const Room = ({socket}) => {
     // Generate a random UUID
     useEffect(() => {
         setUuidv(uuidv4()) ;
-        setSessionId(uuidv) ;
+        // setSessionId(uuidv) ;
     }
     , []);
 
@@ -34,6 +34,12 @@ const Room = ({socket}) => {
         navigate('/host' , {state: data}) ;
     })
 
+    socket.on('room-joined' , (data)=> {
+        console.log('Room join: ', data) ;
+
+        navigate('/viewer' , {state: data}) ;
+    })
+
     socket.on('error' , (err) => {
         console.error('Socket error:', err);
         alert(err.message || 'An error occurred.');
@@ -42,22 +48,25 @@ const Room = ({socket}) => {
     // Cleanup listeners on unmount
     return () => {
         socket.off('room-created');
+        socket.off('room-joined') ;
         socket.off('error');
       };
 
   } , [socket])
 
   const handleCreateRoom = () => {
-    console.log("Room created!" , {sessionId: uuidv , name: 'HostNmae'});
+    console.log("Room created!" , {sessionId: uuidv , name: 'HostName'});
     // Add logic to create a room
     
-    socket.emit('create-room' , {sessionID: uuidv , name: 'HostNmae'}) ;
+    socket.emit('create-room' , {sessionID: uuidv , name: 'HostName'}) ;
   };
 
   const handleJoinRoom = () => {
     if (sessionId.trim()) {
       console.log(`Joining room with Session ID: ${sessionId}`);
       // Add logic to join a room
+
+      socket.emit('join-room' , {sessionID: sessionId , name: 'viewerName'})
     } else {
       alert("Please enter a valid Session ID.");
     }

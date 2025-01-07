@@ -47,6 +47,13 @@ module.exports = (io) => {
 
         socket.on("join-room" , async ({sessionID , name = "viewer"}) => {
             try{
+                
+                console.log("sessionId: " , sessionID , "Name:" , name) ;
+
+                if (typeof sessionID !== 'string') {
+                    throw new TypeError('sessionID must be a string');
+                }
+
                 const sessionData = await redisClient.get(sessionID);
 
                 if (!sessionData) {
@@ -68,6 +75,7 @@ module.exports = (io) => {
         })
 
         socket.on("add-element" , (data) => {
+            // console.log('hello' , data);
             const {sessionID , element} = data ;
 
             if (!sessionID || !element) {
@@ -75,7 +83,7 @@ module.exports = (io) => {
                 return;
             }
 
-            console.log(`Element added to sessionID ${sessionID} by ${socket.id}:`, element);
+            // console.log(`Element added to sessionID ${sessionID} by ${socket.id}:`, element);
 
             io.to(sessionID).emit('element-added', { element });
 

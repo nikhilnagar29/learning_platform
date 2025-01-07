@@ -7,13 +7,14 @@ const roughGenerator = rough.generator() ;
 import WhiteBoard from "../components/Whiteboard/index" ;
 import UserPage from "../components/UserBar/index" ;
 
-const RoomPage = ({io}) => {
+const RoomPage = ({socket}) => {
     const canvasRef = useRef(null) ;
     const ctxRex = useRef(null) ;
 
     const location = useLocation();
     const [roomData , setRoomData] = useState(null) ;
 
+    //to save sessionID and name
     useEffect(() => {
         if(location.state){
 
@@ -38,6 +39,7 @@ const RoomPage = ({io}) => {
 
     } , [location.state]) ;
 
+    
 
     // if(!roomData){
     //    alert('first create sessionID') ;
@@ -51,6 +53,24 @@ const RoomPage = ({io}) => {
     const [history , setHistory] = useState([]);
     const [clean , setClean] = useState(false) ;
 
+    //to send element with use of socketIO
+    useEffect(() => {
+        if(roomData){
+            // console.log("hello bhai", typeof elements, elements); // Debug log
+
+            if(Array.isArray(elements)){
+                socket.emit('add-element' , { sessionID: roomData.sessionID, element: elements } ) ;
+            }else{
+                console.error("Error: `elements` is not an array", elements);
+            }
+
+            
+        }
+            
+    } , [elements]) ;
+
+    
+
     return (
         <>
                 <div className="bg-gray-700 w-screen h-screen">
@@ -60,6 +80,7 @@ const RoomPage = ({io}) => {
                     elements={elements} setElements={setElements}
                     history={history} setHistory={setHistory}
                     clean={clean} setClean = {setClean}
+                    roomData={roomData}
                 />
                 <WhiteBoard 
                     tool={tool} setTool={setTool}
@@ -67,7 +88,7 @@ const RoomPage = ({io}) => {
                     ctxRex={ctxRex} elements={elements}
                     setElements={setElements}
                     color={color}
-                    
+                
                 />
             </div>
         </>
