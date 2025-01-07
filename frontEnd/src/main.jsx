@@ -9,7 +9,7 @@ import Home from './pages/Home.jsx'
 import ViewerLook from './pages/veiwer'
 
 
-const server = "http://localhost:3000" ;
+const server = "https://learning-platform-backend-tqmf.onrender.com" ;
 const connectionOptions = {
   forceNew: true,
   reconnectionAttempts: 'Infinity',
