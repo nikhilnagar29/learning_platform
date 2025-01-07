@@ -1,6 +1,14 @@
 // socket.js
 const redis = require('redis');
-const redisClient = redis.createClient();
+
+// Check environment variables or use default values
+const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
+const REDIS_PORT = process.env.REDIS_PORT || 6379;
+
+const redisClient = redis.createClient({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+});
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
