@@ -6,7 +6,7 @@ import './index.css'
 import App from './App.jsx'
 import RoomPage from './pages/RoomPage'
 import Home from './pages/Home.jsx'
-import ViewerLook from './pages/veiwer'
+import ViewerLook from './pages/Viewer.jsx'
 
 
 const server = "https://learning-platform-backend-tqmf.onrender.com" ;
