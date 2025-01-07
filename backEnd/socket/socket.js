@@ -89,20 +89,25 @@ module.exports = (io) => {
 
         })
 
-        socket.on("new-message" , (data) => {
-            const {message , name , sessionID} = data ;
-
+        socket.on("new-message", (data) => {
+            const { message, name, role, sessionID } = data;
+        
             if (!message || !name || !sessionID) {
                 socket.emit('error', { message: 'Invalid data. Message, name, and session ID are required.' });
                 return;
             }
 
-            console.log(`New message in sessionID ${sessionID} from ${name}: ${message}`);
-
-            // Broadcast message to all members of the room
-            io.to(sessionID).emit('message-received', { message, name });
-
-        })
+            io.in(sessionID).allSockets().then(sockets => {
+                console.log(`Sockets in room ${sessionID}:`, [...sockets]);
+            });
+            
+        
+            // console.log(`New message in sessionID ${sessionID} from ${name}: ${message}`, role);
+        
+            // Broadcast the message to everyone else in the room
+            socket.broadcast.to(sessionID).emit('message-received', { message, name, role });
+        });
+        
 
         socket.on("disconnect" , () => {
             console.log(`socket ${socket.id} disconnect`) ;

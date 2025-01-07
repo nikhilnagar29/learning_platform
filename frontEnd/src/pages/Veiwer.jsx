@@ -2,6 +2,7 @@ import { useEffect , useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import WhiteBoard from "../components/Whiteboard/index" ;
+import ChatRoom from "../components/chatRoom";
 
 const ViewerLook = ({socket}) => {
     const canvasRef = useRef(null) ;
@@ -96,6 +97,10 @@ const ViewerLook = ({socket}) => {
                         setElements={setElements}
                         color={color}
                         
+                    />
+                    <ChatRoom
+                        roomData={roomData}
+                        socket={socket}
                     />
             </div>
         </>

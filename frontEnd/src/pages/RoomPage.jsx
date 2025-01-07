@@ -6,6 +6,7 @@ const roughGenerator = rough.generator() ;
 
 import WhiteBoard from "../components/Whiteboard/index" ;
 import UserPage from "../components/UserBar/index" ;
+import ChatRoom from "../components/chatRoom";
 
 const RoomPage = ({socket}) => {
     const canvasRef = useRef(null) ;
@@ -39,7 +40,26 @@ const RoomPage = ({socket}) => {
 
     } , [location.state]) ;
 
-    
+    useEffect(()=>{
+        if(roomData){
+            const {sessionID , name} = roomData;
+
+            socket.emit('join-room',{sessionID , name}) ;
+
+            socket.on('room-joined' , (data) => {
+                console.log(`Rejoined room successfully: ${data.sessionID}`);
+            })
+
+            socket.on('error' , (err) => {
+                console.error('Error rejoining room:', err.message);
+            })
+
+            return () => {
+                socket.off('room-joined');
+                socket.off('error');
+            };
+        }
+    } , [roomData])
 
     // if(!roomData){
     //    alert('first create sessionID') ;
@@ -89,6 +109,11 @@ const RoomPage = ({socket}) => {
                     setElements={setElements}
                     color={color}
                 
+                />
+                <ChatRoom
+                    socket={socket}
+                    roomData={roomData}
+                    role={"HOST"}
                 />
             </div>
         </>

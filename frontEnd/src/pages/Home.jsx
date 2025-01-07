@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const Room = ({socket}) => {
   const [sessionId, setSessionId] = useState("");
+  const [viewerName , setViewerName] = useState("");
+  const [hostName , setHostName] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [uuidv , setUuidv] = useState("") ;
 
@@ -58,7 +60,7 @@ const Room = ({socket}) => {
     console.log("Room created!" , {sessionId: uuidv , name: 'HostName'});
     // Add logic to create a room
     
-    socket.emit('create-room' , {sessionID: uuidv , name: 'HostName'}) ;
+    socket.emit('create-room' , {sessionID: uuidv , name: hostName}) ;
   };
 
   const handleJoinRoom = () => {
@@ -66,7 +68,7 @@ const Room = ({socket}) => {
       console.log(`Joining room with Session ID: ${sessionId}`);
       // Add logic to join a room
 
-      socket.emit('join-room' , {sessionID: sessionId , name: 'viewerName'})
+      socket.emit('join-room' , {sessionID: sessionId , name: viewerName})
     } else {
       alert("Please enter a valid Session ID.");
     }
@@ -87,13 +89,20 @@ const Room = ({socket}) => {
       </button>
       <div className="flex flex-col md:flex-row items-center justify-center gap-10">
         {/* Create Room Box */}
-        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[350px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[400px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-2xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             Create Room
             </h2>
             <p className={`text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Create a session and share the ID with your friends to collaborate.
             </p>
+            <input 
+                type="text" 
+                className={`border rounded-lg w-full p-3 focus:outline-none focus:ring-2 text-sm font-mono transition-colors duration-300 ${isDarkMode ? 'bg-gray-700 border-gray-600 focus:ring-blue-600 text-white' : 'bg-gray-50 border-gray-300 focus:ring-green-300 text-gray-800'}`}
+                placeholder="Enter your name"
+                value={hostName}
+                onChange={(e) => setHostName(e.target.value)}
+            />
             <button 
             className={`px-4 py-2 rounded-lg w-full text-lg font-medium transition-colors duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
             onClick={handleCreateRoom}
@@ -126,13 +135,20 @@ const Room = ({socket}) => {
 
         {/* Join Room Box */}
         {/* Join Room Box */}
-        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[350px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`flex flex-col items-center justify-center gap-4 border shadow-lg rounded-lg p-6 w-[400px] h-[400px] max-w-sm ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-2xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                 Join Room
             </h2>
             <p className={`text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Enter the session ID shared by the host to join the room and start collaborating.
             </p>
+            <input 
+                type="text" 
+                className={`border rounded-lg w-full p-3 focus:outline-none focus:ring-2 text-sm font-mono transition-colors duration-300 ${isDarkMode ? 'bg-gray-700 border-gray-600 focus:ring-green-600 text-white' : 'bg-gray-50 border-gray-300 focus:ring-green-300 text-gray-800'}`}
+                placeholder="Enter your name"
+                value={viewerName}
+                onChange={(e) => setViewerName(e.target.value)}
+            />
             <input 
                 type="text" 
                 className={`border rounded-lg w-full p-3 focus:outline-none focus:ring-2 text-sm font-mono transition-colors duration-300 ${isDarkMode ? 'bg-gray-700 border-gray-600 focus:ring-green-600 text-white' : 'bg-gray-50 border-gray-300 focus:ring-green-300 text-gray-800'}`}
