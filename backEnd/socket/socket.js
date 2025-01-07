@@ -97,9 +97,9 @@ module.exports = (io) => {
                 return;
             }
 
-            io.in(sessionID).allSockets().then(sockets => {
-                console.log(`Sockets in room ${sessionID}:`, [...sockets]);
-            });
+            // io.in(sessionID).allSockets().then(sockets => {
+            //     console.log(`Sockets in room ${sessionID}:`, [...sockets]);
+            // });
             
         
             // console.log(`New message in sessionID ${sessionID} from ${name}: ${message}`, role);

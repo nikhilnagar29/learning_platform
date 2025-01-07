@@ -14,7 +14,7 @@ const ChatRoom = ({roomData , socket , role = "ME"}) => {
   useEffect(() => {
         // Listen for incoming messages
         socket.on("message-received", (data) => {
-            console.log("Received message:", data);
+            // console.log("Received message:", data);
             const { message, name, role } = data;
 
             setMessages((prev) => [
@@ -39,7 +39,7 @@ const ChatRoom = ({roomData , socket , role = "ME"}) => {
             [...prev, 
             { role , name:roomData.name , message, id: Date.now() }]);
 
-                console.log(role  , message) ;
+                // console.log(role  , message) ;
         var updatedRole = role ;
         if(role === "ME"){
             updatedRole = "VIEWER" ;
