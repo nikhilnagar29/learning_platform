@@ -19,7 +19,7 @@ socketFn(io);
 const main = require('./router/main');
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.send('api working');
 });
 
 app.use('/', main);

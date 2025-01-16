@@ -8,6 +8,8 @@ const Room = ({socket}) => {
   const [hostName , setHostName] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [uuidv , setUuidv] = useState("") ;
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [errorMessage, setErrorMessage] = useState(""); // Add error message state
 
   const navigate = useNavigate() ;
 
@@ -28,23 +30,28 @@ const Room = ({socket}) => {
     }
   }, []);
 
+
+
   //socket set 
   useEffect(() => {
     socket.on('room-created' , (data) => {
         console.log('Room Created: ', data) ;
+        setIsLoading(false); // Stop loading
+        setErrorMessage(""); // Clear any error messages
 
         navigate('/host' , {state: data}) ;
     })
 
     socket.on('room-joined' , (data)=> {
         console.log('Room join: ', data) ;
-
+        setIsLoading(false); // Stop loading
         navigate('/viewer' , {state: data}) ;
     })
 
     socket.on('error' , (err) => {
         console.error('Socket error:', err);
-        alert(err.message || 'An error occurred.');
+        setIsLoading(false); // Stop loading
+        setErrorMessage(err.message || 'An error occurred.');
     } )
 
     // Cleanup listeners on unmount
@@ -56,17 +63,46 @@ const Room = ({socket}) => {
 
   } , [socket])
 
+  useEffect(() => {
+    let waitTimeout;
+    if (isLoading) {
+      waitTimeout = setTimeout(() => {
+        setErrorMessage("Wait for 15 seconds, we are trying to connect to the server.");
+      }, 800);
+    }
+    return () => clearTimeout(waitTimeout);
+  }, [isLoading]);
+
   const handleCreateRoom = () => {
+    if (!hostName.trim()) {
+      // setIsLoading(true);
+      setErrorMessage("Please enter your name.");
+      waitTimeout = setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
+      return;
+    }
+
+    setIsLoading(true); // Start loading
+
     console.log("Room created!" , {sessionId: uuidv , name: 'HostName'});
     // Add logic to create a room
-    
     socket.emit('create-room' , {sessionID: uuidv , name: hostName}) ;
   };
 
   const handleJoinRoom = () => {
+    if (!viewerName.trim() || !sessionId.trim()) {
+      setErrorMessage("Please enter your name and a valid Session ID.");
+      waitTimeout = setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
+      return;
+    }
+
     if (sessionId.trim()) {
       console.log(`Joining room with Session ID: ${sessionId}`);
       // Add logic to join a room
+      setIsLoading(true); // Start loading
 
       socket.emit('join-room' , {sessionID: sessionId , name: viewerName})
     } else {
@@ -81,6 +117,9 @@ const Room = ({socket}) => {
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-500 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
+      {errorMessage && (
+        <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+      )}
       <button 
         onClick={toggleDarkMode} 
         className={`mb-6 px-3 py-1 rounded-full ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'} text-sm transition-colors duration-300`}
