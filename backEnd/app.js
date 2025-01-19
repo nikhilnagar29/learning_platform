@@ -22,6 +22,10 @@ app.get('/', (req, res) => {
     res.send('api working');
 });
 
+app.get('/check' , (req , res) => {
+    res.send('ok');
+}) 
+
 app.use('/', main);
 
 const port = process.env.PORT || 3000;
