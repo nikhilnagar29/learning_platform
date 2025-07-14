@@ -1,13 +1,17 @@
 const io = require('socket.io-client');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+require('dotenv').config();
+
 
 // Configuration
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
-const NUM_CLIENTS = 200; // Reduced from 50 to 20 for initial testing
-const TEST_DURATION = 60000; // Reduced from 60000 to 30000 for faster testing
-const ELEMENT_SEND_INTERVAL = 100; // Send an element every 1 second
-const SESSION_ID = uuidv4(); // Generate a unique session ID for this test
+// const SERVER_URL = process.env.SERVER_URL;
+const SERVER_URL="https://learning-platform-backend-tqmf.onrender.com"
+
+const NUM_CLIENTS = 500; // Reduced from 50 to 20 for initial testing
+const TEST_DURATION = 90000; // Reduced from 60000 to 30000 for faster testing
+const ELEMENT_SEND_INTERVAL = 300; // Send an element every 1 second
+const SESSION_ID = 'd625e585-a3f5-4bd8-8c5f-3cdbdfe0f4c3'; // Generate a unique session ID for this test
 const RESULTS_FILE = './results.json';
 
 // Connection options
@@ -16,6 +20,7 @@ const connectionOptions = {
   reconnectionAttempts: 'Infinity',
   timeout: 10000,
   transports: ['websocket'],
+  auth: { debug: true }
 };
 
 console.log(`Starting connection test with ${NUM_CLIENTS} clients`);
