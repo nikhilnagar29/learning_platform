@@ -1,4 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useCallback, useMemo, useRef, useState } from "react";
+import { Pencil, Circle, Square, Type, Highlighter, Eraser, Undo, Redo, Trash2, Download, Users, MessageCircle } from "lucide-react";
+
 import rough from 'roughjs';
 
 const roughGenerator = rough.generator() ;
@@ -7,6 +9,7 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
 
     const [isDrawing , setIsDrawing] = useState(false) ;
     const [screenW , setScreenW] = useState(window.innerWidth) ;
+    const [screenH , setScreenH] = useState(window.innerHeight) ;
     
     canvasRef = useRef(null);
     ctxRef = useRef(null);
@@ -23,11 +26,14 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
-            setScreenW(screenWidth) ;
+            
 
             // Calculate canvas dimensions based on aspect ratio
             let canvasWidth = screenWidth;
             let canvasHeight = screenWidth / aspectRatio;
+
+            setScreenW(screenWidth) ;
+            setScreenH(screenHeight) ;
 
             if (canvasHeight > screenHeight) {
                 canvasHeight = screenHeight;
@@ -206,6 +212,8 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
                 offsetY ,
                 path: [[offsetX,offsetY]],
                 storke: color, 
+                WhenScreenW: screenW , 
+                WhenScreenH: screenH
                 }
 
             ])
@@ -454,4 +462,214 @@ const WhiteBoard = ({ tool, canvasRef , ctxRef , elements , setElements , color 
 );
 }
 
-export default WhiteBoard;
+// Optimized Whiteboard Component
+const OptimizedWhiteboard = ({ 
+    tool, 
+    elements, 
+    setElements, 
+    color, 
+    onAddElement,
+    history,
+    setHistory,
+    historyIndex,
+    setHistoryIndex 
+  }) => {
+    const canvasRef = useRef(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [currentElement, setCurrentElement] = useState(null);
+    
+    // Optimized canvas setup with proper scaling
+    useLayoutEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      
+      // Set actual size in memory (scaled up for retina displays)
+      const scale = window.devicePixelRatio || 1;
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+      
+      // Scale the context back down
+      ctx.scale(scale, scale);
+      
+      // Set CSS size
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      
+      // Initial background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }, []);
+    
+    // Optimized rendering with offscreen canvas for better performance
+    useLayoutEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      
+      // Draw all elements
+      elements.forEach(element => {
+        if (!element.type) return;
+        
+        switch (element.type) {
+          case 'pencil':
+          case 'pen':
+            DrawingUtils.drawPencil(ctx, element);
+            break;
+          case 'circle':
+            DrawingUtils.drawCircle(ctx, element);
+            break;
+          case 'rectangle':
+            DrawingUtils.drawRectangle(ctx, element);
+            break;
+          case 'highlight':
+            DrawingUtils.drawHighlight(ctx, element);
+            break;
+          case 'text':
+            DrawingUtils.drawText(ctx, element);
+            break;
+          case 'eraser':
+            DrawingUtils.drawEraser(ctx, element);
+            break;
+        }
+      });
+    }, [elements]);
+    
+    // Optimized event handlers
+    const handleMouseDown = useCallback((e) => {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      setIsDrawing(true);
+      
+      let newElement = {
+        id: Date.now() + Math.random(),
+        type: tool,
+        stroke: color,
+        lineWidth: tool === 'highlighter' ? 15 : tool === 'eraser' ? 20 : 2,
+        timestamp: Date.now()
+      };
+      
+      switch (tool) {
+        case 'pencil':
+        case 'pen':
+        case 'highlighter':
+        case 'eraser':
+          newElement.path = [[x, y]];
+          break;
+        case 'circle':
+          newElement.offsetX = x;
+          newElement.offsetY = y;
+          newElement.radius = 0;
+          break;
+        case 'rectangle':
+          newElement.offsetX = x;
+          newElement.offsetY = y;
+          newElement.width = 0;
+          newElement.height = 0;
+          break;
+        case 'text':
+          const text = prompt('Enter text:');
+          if (text) {
+            newElement.offsetX = x;
+            newElement.offsetY = y;
+            newElement.text = text;
+            newElement.fontSize = 16;
+            newElement.fontFamily = 'Arial';
+          } else {
+            setIsDrawing(false);
+            return;
+          }
+          break;
+      }
+      
+      setCurrentElement(newElement);
+      
+      if (tool === 'text') {
+        setElements(prev => [...prev, newElement]);
+        onAddElement?.(newElement);
+        setIsDrawing(false);
+      }
+    }, [tool, color, setElements, onAddElement]);
+    
+    const handleMouseMove = useCallback((e) => {
+      if (!isDrawing || !currentElement) return;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      let updatedElement = { ...currentElement };
+      
+      switch (tool) {
+        case 'pencil':
+        case 'pen':
+        case 'highlighter':
+        case 'eraser':
+          updatedElement.path = [...currentElement.path, [x, y]];
+          break;
+        case 'circle':
+          const radius = Math.sqrt(
+            Math.pow(x - currentElement.offsetX, 2) + 
+            Math.pow(y - currentElement.offsetY, 2)
+          );
+          updatedElement.radius = radius;
+          break;
+        case 'rectangle':
+          updatedElement.width = x - currentElement.offsetX;
+          updatedElement.height = y - currentElement.offsetY;
+          break;
+      }
+      
+      setCurrentElement(updatedElement);
+      
+      // Update the last element in the array
+      setElements(prev => {
+        const newElements = [...prev];
+        if (newElements.length > 0 && newElements[newElements.length - 1].id === currentElement.id) {
+          newElements[newElements.length - 1] = updatedElement;
+        } else {
+          newElements.push(updatedElement);
+        }
+        return newElements;
+      });
+    }, [isDrawing, currentElement, tool, setElements]);
+    
+    const handleMouseUp = useCallback(() => {
+      if (isDrawing && currentElement) {
+        onAddElement?.(currentElement);
+        
+        // Add to history for undo/redo
+        setHistory(prev => [...prev.slice(0, historyIndex + 1), [...elements, currentElement]]);
+        setHistoryIndex(prev => prev + 1);
+      }
+      
+      setIsDrawing(false);
+      setCurrentElement(null);
+    }, [isDrawing, currentElement, onAddElement, elements, setHistory, historyIndex, setHistoryIndex]);
+    
+    return (
+      <div className="flex-1 relative overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          className="absolute top-0 left-0 w-full h-full cursor-crosshair border border-gray-300 bg-white"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        />
+      </div>
+    );
+  };
+
+  export default WhiteBoard ;

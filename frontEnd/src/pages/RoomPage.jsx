@@ -1,5 +1,6 @@
-import { useEffect , useRef, useState } from "react";
+import { useEffect , useRef , useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 
 import rough from "roughjs" ;
 const roughGenerator = rough.generator() ;
@@ -79,6 +80,7 @@ const RoomPage = ({socket}) => {
             // console.log("hello bhai", typeof elements, elements); // Debug log
 
             if(Array.isArray(elements)){
+                console.log("elements", elements);
                 socket.emit('add-element' , { sessionID: roomData.sessionID, element: elements } ) ;
             }else{
                 console.error("Error: `elements` is not an array", elements);

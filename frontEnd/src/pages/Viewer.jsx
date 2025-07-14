@@ -43,6 +43,7 @@ const ViewerLook = ({socket}) => {
             // Validate if `data.elements` is an array
             if (Array.isArray(data.element)) {
                 setElements(data.element); // Set elements if valid
+                console.log("elements", data.element);
             } else {
                 console.error("Error: `data.elements` is not an array", data.elements);
             }

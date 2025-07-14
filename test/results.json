@@ -1,0 +1,11 @@
+{
+  "totalClients": 500,
+  "successfulConnections": 294,
+  "failedConnections": 0,
+  "averageConnectionTime": 785.3809523809524,
+  "averageLatency": 316.76156467348176,
+  "maxConcurrentConnections": 294,
+  "testDuration": 60,
+  "timestamp": "2025-06-29T13:08:30.518Z",
+  "elementsReceived": 85692
+}

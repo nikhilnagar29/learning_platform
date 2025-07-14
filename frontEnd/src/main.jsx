@@ -8,8 +8,8 @@ import RoomPage from './pages/RoomPage'
 import Home from './pages/Home.jsx'
 import ViewerLook from './pages/Viewer.jsx'
 
-
 const server = "https://learning-platform-backend-tqmf.onrender.com" ;
+
 const connectionOptions = {
   forceNew: true,
   reconnectionAttempts: 'Infinity',

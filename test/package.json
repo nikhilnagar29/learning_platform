@@ -1,0 +1,13 @@
+{
+  "name": "learning-platform-tests",
+  "version": "1.0.0",
+  "description": "Performance tests for learning platform",
+  "main": "connection_test.js",
+  "scripts": {
+    "test": "node connection_test.js"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.0.3"
+  }
+} 
